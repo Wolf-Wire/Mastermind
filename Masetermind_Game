@@ -1,0 +1,108 @@
+/*********************************************************************************************************************************  
+********************************************************************************************************************************** 
+***   Mastermind Game with Numbers                                                                                             ***                                                                      *
+**********************************************************************************************************************************
+* The following code uses 2 functions (one of them main) to instruct, design and run the mastermind game with three digits.      *
+* For learning how the game works look at the gamePlay function. Detail for each function and variables can be find next to them.*
+**********************************************************************************************************************************
+*********************************************************************************************************************************/
+
+#include <iostream>   // Needed for cin and cout
+#include <cstdlib>    // Needed for rand() to work
+using namespace std;
+                      // the function that prints and explains the game instruction. No return value. 
+void gamePlay () {
+  cout << "Program: 2 MasterMind" << endl
+       << "The program selects 3 distinct random digits 0..9." << endl
+       << "On each turn you guess 3 digits.  The program indicates" << endl
+       << "how many are correct. You have 10 moves to guess the number." << endl << "Good luck!" << endl << endl
+       << "Press 's' to set the three digits, or 'r' to randomize them: " ;  
+}
+                     // the main function that considers diiferent scenarios to design and run the game. 
+int main() {
+  
+  char userInput;    // first user Input to set the number (s) or randomize it (r).
+  int userSet [3];   // a set of 3 digits which is the game answer and depends on user input.
+  int userGus [3];   // a set of 3 digits that user guesses each time and program compares it to userSet.
+  
+  gamePlay();        // calling the function to print the game instruction for the player.
+  
+  cin >> userInput ; // asking user to enter either r or s.
+                     // in case of r: this function will randomize userSet.
+  if (userInput == 'r') {
+    for (int i = 0; i < 3 ; ++i) {        // for loop to make each number random independantly.
+      userSet[i] = rand() % 10;           // using % 10 to get a random number from 0 - 9 for each digit.
+    }
+
+  }                  // in case of s: asks user to enter the 3 digits in the specified form below.
+  else {  
+    int userNum ;
+    cout << endl << "Enter three distinct digits each in the range 0..9 (e.g. 354): ";
+    cin >> userNum;
+                     // getting the each number from user input:
+    userSet[0] = userNum / 100 % 10;   // to access hundreds
+    userSet[1] = userNum / 10 % 10;    // to access tens
+    userSet[2] = userNum %10;          // to access ones
+  }
+                     // now game starts and explains the cheat and exit code.
+  cout << endl << "Input of 000 displays the hidden digits.  Input of 999 exits the program." << endl << endl;
+  cout << "                            In place  Out of place" << endl;
+  cout << "                            --------  ------------" << endl;
+  
+  int l;             // new variable which acts as a line holder for the next do-while loop = number of user guess.
+  int inPlace;     // this vaiable keeps track od score of the correct numbers in the right place. 
+  for (int l = 1 ; l < 11 ; ++l) {         // the main loop when the game plays out controls the break commands.
+      int inPlace = 0;
+      int outPlace = 0;   // variabe for keeping track od score when only is the righ number, not placed correctly
+      start:                               // if users enter 000 computer comes back here and doesn't count that entry.
+      cout << l << ". Your guess: " ;
+      int userPik;
+      cin >> userPik;          // asking user to enter their guess, a three digit number
+
+      if (userPik == 000) {    // loop for designing the cheat code to show the game's answer when requested.
+        cout << endl << "   Hidden digits are: " << userSet[0] << userSet[1] << userSet[2] << endl;
+        goto start;            // goaes back to the beginning of the counter and does't count this one.
+      }
+      else if (userPik == 999) {          // the exit code.
+        cout << endl << "   Exiting loop...";
+        cout << endl << endl << "   Better luck next time.";
+        break;                // when the exit code enters the code exits the loop for the game
+      }
+      else {                  // changing the user guess to an array of three as explained above
+        userGus[0] = userPik / 100 % 10;
+        userGus[1] = userPik / 10 % 10;
+        userGus[2] = userPik % 10;    
+           // next 3 if statements look for a correct number in the wrong place to incremnent the corresponding score.
+        if (userGus[0] == userSet [1] || userGus[0] == userSet [2]) {
+        ++outPlace;
+        }
+        if (userGus[1] == userSet [0] || userGus[1] == userSet [2]) {
+        ++outPlace;
+        }
+        if (userGus[2] == userSet [0] || userGus[2] == userSet [1]) {
+        ++outPlace;
+        }      
+           // the loop that looks for a correct number in the right place to incremnent the corresponding score.
+        for (int i = 0; i < 3 ; ++i) {
+          if (userGus[i] == userSet[i]) {
+            ++inPlace;
+          }
+        }
+                      // shows the user how they did by their updated scores.
+        cout << endl << "           You entered: " << userGus[0] << userGus[1] << userGus[2] << "     " << inPlace << "          " << outPlace << endl; 
+                      // this if statement ends the game if the correct answer has been reached.
+        if (inPlace == 3) {
+          cout << endl << endl << "*** Congratulations! ***";
+          break;      // after the correct guess breaks out of the main loop and goes for the final commands.
+        }
+
+        if (l == 10) {         // if they couldn't answer in 10 moves the game will be over
+          cout << endl << endl << "   Better luck next time.";  
+        }          
+      }     // ending the else statement
+  }         // ending the main for loop  
+            // last statement before exit
+  cout << endl << endl << "Exiting program..." << endl;
+  exit (0); // exit command
+  return 0; // keeping c++ happy
+}           // end of main function and the game
